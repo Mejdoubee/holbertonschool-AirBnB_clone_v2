@@ -2,14 +2,23 @@
 '''
 Model that defines BaseModel class
 '''
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, String, DateTime, ForeignKey
 import uuid
 from datetime import datetime
+
+
+Base = declarative_base()
 
 
 class BaseModel:
     '''
     This class defines all common attributes/methods for other classes
     '''
+    id = Column(String(60), nullable=False, primary_key=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
     def __init__(self, *args, **kwargs):
         '''
         Initialization of the base model
@@ -20,20 +29,17 @@ class BaseModel:
                     self.__dict__[key] = datetime.strptime(
                         value, "%Y-%m-%dT%H:%M:%S.%f"
                         )
-                elif key != "__class__":
-                    setattr(self, key, value)
+                setattr(self, key, value)
         else:
             self.id = str(uuid.uuid4())
             self.created_at = self.updated_at = datetime.now()
-            from . import storage
-            storage.new(self)
 
     def __str__(self):
         '''
         Return the string representation of:
         [<class name>] (<self.id>) <self.__dict__>
         '''
-        return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
+        return f"[{self.__class__.__name__}] ({self.id}) {self.to_dict()}"
 
     def save(self):
         '''
@@ -42,6 +48,15 @@ class BaseModel:
         '''
         self.updated_at = datetime.now()
         from . import storage
+        storage.new(self)
+        storage.save()
+
+    def delete(self):
+        '''
+        Deletes the current instance from the storage
+        '''
+        from . import storage
+        storage.delete(self)
         storage.save()
 
     def to_dict(self):
@@ -53,4 +68,6 @@ class BaseModel:
         dict_copy["__class__"] = self.__class__.__name__
         dict_copy["created_at"] = self.created_at.isoformat()
         dict_copy["updated_at"] = self.updated_at.isoformat()
+        if '_sa_instance_state' in dict_copy:
+            del (dict_copy['_sa_instance_state'])
         return dict_copy
