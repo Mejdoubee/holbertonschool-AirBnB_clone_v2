@@ -35,12 +35,25 @@ class BaseModel:
             self.created_at = self.updated_at = datetime.now()
 
     def __str__(self):
-        '''Returns a string representation of the instance.'''
-        dict_copy = self.to_dict().copy()
-        dict_copy["created_at"] = self.created_at.strftime('%Y-%m-%d %H:%M:%S')
-        dict_copy["updated_at"] = self.updated_at.strftime('%Y-%m-%d %H:%M:%S')
-        return "[{}] ({}) {}".format(self.__class__.__name__, self.id, dict_copy)
+        '''
+        Returns a string representation of the instance.
+        '''
+        dict_repr = self.to_dict().copy()
 
+        # Use the datetime module directly for formatting
+        dict_repr["created_at"] = datetime.strftime(
+            self.created_at, "datetime.datetime(%Y, %m, %d, %H, %M, %S)")
+        dict_repr["updated_at"] = datetime.strftime(
+            self.updated_at, "datetime.datetime(%Y, %m, %d, %H, %M, %S)")
+
+        if '__class__' in dict_repr:
+            del dict_repr['__class__']
+
+        # Constructing the string representation manually
+        attr_str = ", ".join(
+            ["'{}': {}".format(k, v) for k, v in dict_repr.items()])
+        return "[{}] ({}) {{{}}}".format(
+            self.__class__.__name__, self.id, attr_str)
 
     def save(self):
         '''
