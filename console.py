@@ -11,7 +11,6 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-from datetime import datetime
 
 
 class HBNBCommand(cmd.Cmd):
@@ -146,28 +145,13 @@ class HBNBCommand(cmd.Cmd):
                 return
             dict_obj = storage.all()
             printed_result = [
-                self.format_obj(value) for key, value in dict_obj.items()
+                str(value) for key, value in dict_obj.items()
                 if key.split(".")[0] == args[0]]
             print(printed_result)
         else:
             dict_obj = storage.all()
-            printed_result = [self.format_obj(value) for key, value in dict_obj.items()]
+            printed_result = [str(value) for key, value in dict_obj.items()]
             print(printed_result)
-
-    def format_obj(self, obj):
-        '''Formats the object into the desired string representation.'''
-        obj_dict = obj.to_dict()
-        for key, value in obj_dict.items():
-            if isinstance(value, str) and len(value) == 19 and value[10] == 'T':
-                try:
-                    dt = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
-                    # Format datetime without seconds
-                    obj_dict[key] = dt.strftime('%Y-%m-%d %H:%M')
-                except ValueError:
-                    pass
-        return "[{}] ({}) {}".format(obj.__class__.__name__, obj.id, obj_dict)
-
-
 
     def do_update(self, args):
         '''
