@@ -8,6 +8,7 @@ from models.base_model import Base, BaseModel
 from models.state import State
 from models.city import City
 from models.user import User
+from models.place import Place
 import os
 
 
@@ -42,7 +43,7 @@ class DBStorage:
         if cls:
             objects = self.__session.query(cls).all()
         else:
-            classes = [State, City, User]
+            classes = [State, City, User, Place]
             for cls in classes:
                 objects.extend(self.__session.query(cls).all())
 
