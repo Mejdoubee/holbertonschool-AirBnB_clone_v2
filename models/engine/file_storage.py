@@ -84,3 +84,11 @@ class FileStorage:
             if key in self.__objects:
                 del self.__objects[key]
                 self.save()
+
+    @property
+    def reviews(self):
+        """Return the list of Review instances with place_id equal to the current Place.id"""
+        from models import storage
+        all_reviews = storage.all(Review)
+        place_reviews = [review for review in all_reviews.values() if review.place_id == self.id]
+        return place_reviews
