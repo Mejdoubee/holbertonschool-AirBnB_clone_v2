@@ -85,3 +85,16 @@ class BaseModel:
         if '_sa_instance_state' in dict_copy:
             del (dict_copy['_sa_instance_state'])
         return dict_copy
+    def to_dict(self):
+        '''Return dictionary representation of instance.'''
+        dict_copy = self.__dict__.copy()
+
+        if "created_at" in dict_copy and isinstance(dict_copy["created_at"], datetime):
+            dict_copy["created_at"] = dict_copy["created_at"].isoformat()
+        if "updated_at" in dict_copy and isinstance(dict_copy["updated_at"], datetime):
+            dict_copy["updated_at"] = dict_copy["updated_at"].isoformat()
+        dict_copy["__class__"] = self.__class__.__name__
+        if '_sa_instance_state' in dict_copy:
+                del (dict_copy['_sa_instance_state'])
+        return dict_copy
+
