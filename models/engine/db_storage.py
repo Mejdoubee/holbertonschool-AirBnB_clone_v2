@@ -10,6 +10,7 @@ from models.city import City
 from models.user import User
 from models.place import Place
 from models.review import Review
+from models.amenity import Amenity
 import os
 
 
@@ -44,7 +45,7 @@ class DBStorage:
         if cls:
             objects = self.__session.query(cls).all()
         else:
-            classes = [State, City, User, Place, Review]
+            classes = [State, City, User, Place, Review, Amenity]
             for cls in classes:
                 objects.extend(self.__session.query(cls).all())
 
