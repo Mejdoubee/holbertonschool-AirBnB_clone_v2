@@ -34,11 +34,11 @@ class Place(BaseModel, Base):
 
     @property
     def amenities(self):
-        """ Returns list of Amenity instances based on amenity_ids """
-        return self.amenity_ids
+        """ Returns list of Amenity instances associated with this Place """
+        return self._amenities
 
     @amenities.setter
     def amenities(self, obj):
-        """ Handles append method for adding an Amenity.id """
+        """ Handles append method for adding an Amenity """
         if isinstance(obj, Amenity):
-            self.amenity_ids.append(obj.id)
+            self._amenities.append(obj)
