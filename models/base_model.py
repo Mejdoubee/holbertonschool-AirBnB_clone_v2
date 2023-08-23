@@ -74,18 +74,6 @@ class BaseModel:
         storage.save()
 
     def to_dict(self):
-        '''
-        Return a dictionary containing all
-        keys/values of __dict__ of the instance
-        '''
-        dict_copy = self.__dict__.copy()
-        dict_copy["__class__"] = self.__class__.__name__
-        dict_copy["created_at"] = self.created_at.isoformat()
-        dict_copy["updated_at"] = self.updated_at.isoformat()
-        if '_sa_instance_state' in dict_copy:
-            del (dict_copy['_sa_instance_state'])
-        return dict_copy
-    def to_dict(self):
         '''Return dictionary representation of instance.'''
         dict_copy = self.__dict__.copy()
 
@@ -97,4 +85,3 @@ class BaseModel:
         if '_sa_instance_state' in dict_copy:
                 del (dict_copy['_sa_instance_state'])
         return dict_copy
-
