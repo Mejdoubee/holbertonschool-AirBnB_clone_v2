@@ -1,23 +1,26 @@
 #!/usr/bin/python3
-"""Place module for the HBNB project"""
-from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, ForeignKey, Integer, Float, Table
-from sqlalchemy.orm import relationship
+""" Place Module for HBNB project """
 from os import getenv
+from models.base_model import BaseModel, Base
+from models.review import Review
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Table
+from sqlalchemy.orm import relationship
 
+# Table Definition
 place_amenity = Table('place_amenity', Base.metadata,
-                      Column('place_id', String(60),
-                             ForeignKey('places.id'),
+                      Column('place_id', String(60), ForeignKey('places.id'), 
                              primary_key=True, nullable=False),
-                      Column('amenity_id', String(60),
-                             ForeignKey('amenities.id'),
+                      Column('amenity_id', String(60), ForeignKey('amenities.id'), 
                              primary_key=True, nullable=False))
 
+
 class Place(BaseModel, Base):
-    """Place class"""
+    """ A place to stay """
     __tablename__ = "places"
-    city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
-    user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
+
+    # Attributes
+    city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
+    user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
     name = Column(String(128), nullable=False)
     description = Column(String(1024), nullable=True)
     number_rooms = Column(Integer, default=0, nullable=False)
@@ -26,23 +29,24 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, default=0, nullable=False)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
-    amenities = relationship('Amenity', secondary=place_amenity, back_populates="place_amenities", viewonly=False)
+    amenity_ids = []
 
+    # Relationships & Properties
     if getenv("HBNB_TYPE_STORAGE") == "db":
-        amenities = relationship('Amenity', secondary=place_amenity, back_populates="place_amenities", viewonly=False)
+        reviews = relationship('Review', cascade="all, delete, delete-orphan", backref="place")
+        amenities = relationship("Amenity", secondary=place_amenity, back_populates='place_amenities', viewonly=False)
     else:
         @property
+        def reviews(self):
+            """ getter for reviews in filestorage use"""
+            return [val for val in storage.all(Review).values() if val.place_id == self.id]
+
+        @property
         def amenities(self):
-            """Get amenities related to this place."""
-            from models import storage
-            all_amenities = storage.all(Amenity)
-            return [amenity for amenity in all_amenities.values() if amenity.id in self.amenity_ids]
+            """ getter for amenity table. Returns the list of Amenity instances linked to Place """
+            return [amenity_inst for amenity_inst in storage.all(Amenity).values() if amenity_inst.id == self.amenity_id]
 
         @amenities.setter
-        def amenities(self, obj):
-            """Set amenities for this place."""
-            if not isinstance(obj, Amenity):
-                return
-            if "amenity_ids" not in self.__dict__:
-                self.amenity_ids = []
-            self.amenity_ids.append(obj.id)
+        def amenities(self, amenity_list):
+            """Setter for amenities"""
+            self.amenity_ids = [amenity_inst for amenity_inst in amenity_list if isinstance(amenity_inst, Amenity)]
