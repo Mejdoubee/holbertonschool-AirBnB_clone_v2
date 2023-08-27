@@ -28,11 +28,8 @@ class DBStorage:
         user = os.environ.get('HBNB_MYSQL_USER')
         password = os.environ.get('HBNB_MYSQL_PWD')
         host = os.environ.get('HBNB_MYSQL_HOST')
-        db = os.environ.get('HBNB_MYSQL_DB')
-        self.__engine = create_engine(
-            f"mysql+mysqldb://{user}:{password}@{host}/{db}",
-            pool_pre_ping=True
-            )
+        database = os.environ.get('HBNB_MYSQL_DB')
+        self.__engine = create_engine('mysql+pymysql://{}:{}@{}/{}'.format(user, password, host, database), pool_pre_ping=True)
 
         if os.environ.get('HBNB_ENV') == 'test':
             Base.metadata.drop_all(self.__engine)
@@ -79,4 +76,3 @@ class DBStorage:
         """ Remove or close the current session """
         if self.__session:
             self.__session.remove()
-
