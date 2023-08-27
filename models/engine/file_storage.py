@@ -92,3 +92,7 @@ class FileStorage:
         all_reviews = storage.all(Review)
         place_reviews = [review for review in all_reviews.values() if review.place_id == self.id]
         return place_reviews
+
+    def close(self):
+        """ Deserializes the JSON file to objects """
+        self.reload()

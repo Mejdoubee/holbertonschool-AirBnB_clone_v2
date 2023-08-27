@@ -74,3 +74,8 @@ class DBStorage:
         Session = orm.sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = orm.scoped_session(Session)
         self.__session = Session()
+
+    def close(self):
+        """ Remove or close the current session """
+        self.__session.remove()
+
