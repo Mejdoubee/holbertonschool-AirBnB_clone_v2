@@ -17,7 +17,7 @@ def states_list():
 
 @app.teardown_appcontext
 def teardown_db(exception):
-    '''After each request, this function provides the ability to 
+    '''After each request, this function provides the ability to
     close the current SQLAlchemy Session'''
     storage.close()
 
