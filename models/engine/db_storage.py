@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-'''
+"""
 DBStorage module
-'''
+"""
 from sqlalchemy import create_engine, orm
 from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base, BaseModel
@@ -15,21 +15,23 @@ import os
 
 
 class DBStorage:
-    '''
+    """
     DBStorage class
-    '''
+    """
     __engine = None
     __session = None
 
     def __init__(self):
-        '''
-        Inisialisation of DBStorage class
-        '''
+        """
+        Initialization of DBStorage class
+        """
         user = os.environ.get('HBNB_MYSQL_USER')
         password = os.environ.get('HBNB_MYSQL_PWD')
         host = os.environ.get('HBNB_MYSQL_HOST')
         database = os.environ.get('HBNB_MYSQL_DB')
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.format(user, password, host, database), pool_pre_ping=True)
+        engine_url = 'mysql+mysqldb://{}:{}@{}/{}'.format(user, password,
+                                                          host, database)
+        self.__engine = create_engine(engine_url, pool_pre_ping=True)
 
         if os.environ.get('HBNB_ENV') == 'test':
             Base.metadata.drop_all(self.__engine)
@@ -37,7 +39,9 @@ class DBStorage:
         self.__session = scoped_session(Session)
 
     def all(self, cls=None):
-        '''All method'''
+        """
+        Returns all instances of the class
+        """
         objects = []
         if cls:
             objects = self.__session.query(cls).all()
@@ -53,26 +57,35 @@ class DBStorage:
         return result
 
     def new(self, obj):
-        '''New method'''
+        """
+        Adds a new object to the session
+        """
         self.__session.add(obj)
 
     def save(self):
-        '''Save method'''
+        """
+        Commits changes to the session
+        """
         self.__session.commit()
 
     def delete(self, obj=None):
-        '''Delete method'''
+        """
+        Deletes an object from the session
+        """
         if obj:
             self.__session.delete(obj)
 
     def reload(self):
-        '''Reload method'''
+        """
+        Reloads all tables
+        """
         Base.metadata.create_all(self.__engine)
         Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = scoped_session(Session)
 
-
     def close(self):
-        """ Remove or close the current session """
+        """
+        Closes or removes the current session
+        """
         if self.__session:
             self.__session.remove()

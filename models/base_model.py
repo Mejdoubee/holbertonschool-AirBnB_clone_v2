@@ -29,7 +29,9 @@ class BaseModel:
         if kwargs:
             for key, value in kwargs.items():
                 if key in ["created_at", "updated_at"]:
-                    self.__dict__[key] = datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f")
+                    self.__dict__[key] = datetime.strptime(
+                        value, "%Y-%m-%dT%H:%M:%S.%f"
+                        )
                 elif key != "__class__":
                     setattr(self, key, value)
 
@@ -76,11 +78,13 @@ class BaseModel:
         '''Return dictionary representation of instance.'''
         dict_copy = self.__dict__.copy()
 
-        if "created_at" in dict_copy and isinstance(dict_copy["created_at"], datetime):
+        if "created_at" in dict_copy and isinstance(
+                dict_copy["created_at"], datetime):
             dict_copy["created_at"] = dict_copy["created_at"].isoformat()
-        if "updated_at" in dict_copy and isinstance(dict_copy["updated_at"], datetime):
+        if "updated_at" in dict_copy and isinstance(
+                dict_copy["updated_at"], datetime):
             dict_copy["updated_at"] = dict_copy["updated_at"].isoformat()
         dict_copy["__class__"] = self.__class__.__name__
         if '_sa_instance_state' in dict_copy:
-                del (dict_copy['_sa_instance_state'])
+            del (dict_copy['_sa_instance_state'])
         return dict_copy
