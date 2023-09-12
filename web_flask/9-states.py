@@ -18,7 +18,8 @@ def teardown(self):
 def states():
     """display all the states"""
     states = storage.all(State).values()
-    return render_template('7-states_list.html', states=states)
+    sorted_states = sorted(states, key=lambda state: state.name)
+    return render_template('7-states_list.html', states=sorted_states)
 
 
 @app.route('/states/<id>', strict_slashes=False)
@@ -30,7 +31,7 @@ def states_id(id):
             return render_template(
                 '9-states.html', state=state, s_cities=state.cities
                 )
-    return render_template('9-states.html')
+    return render_template('9-states.html', state_not_found=True)
 
 
 if __name__ == '__main__':
