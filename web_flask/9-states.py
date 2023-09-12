@@ -30,7 +30,7 @@ def states_id(id):
             return render_template(
                 '9-states.html', state=state, s_cities=state.cities
                 )
-    return render_template('9-states.html', state_not_found=True)
+    return render_template('9-states.html')
 
 
 if __name__ == '__main__':
