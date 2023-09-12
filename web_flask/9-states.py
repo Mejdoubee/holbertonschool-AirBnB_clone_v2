@@ -16,7 +16,7 @@ def states_list():
     states_sorted = sorted(
         storage.all(State).values(), key=lambda state: state.name
     )
-    return render_template('7-states_list.html', states=states_sorted)
+    return render_template('8-cities_by_states.html', states=states_sorted)
 
 
 @app.route('/states/<id>', strict_slashes=False)
