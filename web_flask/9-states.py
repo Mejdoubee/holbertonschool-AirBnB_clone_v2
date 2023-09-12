@@ -24,11 +24,13 @@ def state_and_cities(id):
     '''
     Display a state and its cities
     '''
-    state = storage.get(State, id)
-    if state:
+    states_sorte = sorted(
+        storage.all(State).values(), key=lambda state: state.name
+    )
+    if states_sorte:
         cities_sorted = sorted(state.cities, key=lambda city: city.name)
         return render_template(
-            "9-states.html", state=state, cities=cities_sorted
+            "9-states.html", state=states_sorte, cities=cities_sorted
         )
     else:
         return render_template("9-states.html")
