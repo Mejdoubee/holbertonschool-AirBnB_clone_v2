@@ -8,36 +8,29 @@ from models.state import State
 app = Flask(__name__)
 
 
+@app.teardown_appcontext
+def teardown(self):
+    """remove the current SQLAlchemy Session: """
+    storage.close()
+
+
 @app.route('/states', strict_slashes=False)
-def states_list():
-    '''
-    Display a list of all states
-    '''
-    states_sorted = sorted(
-        storage.all(State).values(), key=lambda state: state.name
-    )
-    return render_template('8-cities_by_states.html', states=states_sorted)
+def states():
+    """display all the states"""
+    states = storage.all(State).values()
+    return render_template('7-states_list.html', states=states)
 
 
 @app.route('/states/<id>', strict_slashes=False)
-def state_and_cities(id):
-    '''
-    Display a state and its cities
-    '''
-    state = storage.get(State, id)
-    if state:
-        cities_sorted = sorted(state.cities, key=lambda city: city.name)
-        return render_template("9-states.html", state=state, cities=cities_sorted)
-    else:
-        return render_template("9-states.html", state=None)
-
-
-@app.teardown_appcontext
-def teardown_db(exception=None):
-    '''
-    Close the session after each request
-    '''
-    storage.close()
+def states_id(id):
+    """display the state and its cities by its ID"""
+    all_states = storage.all(State).values()
+    for state in all_states:
+        if state.id == id:
+            return render_template(
+                '9-states.html', state=state, s_cities=state.cities
+                )
+    return render_template('9-states.html', state_not_found=True)
 
 
 if __name__ == '__main__':
